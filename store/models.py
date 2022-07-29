@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 class Book(models.Model):
@@ -30,3 +31,10 @@ class BookCopy(models.Model):
         else:
             return f'{self.book.title} - Available'
 
+class BookRating(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(default=None, validators=[MinValueValidator(0), MaxValueValidator(10)])            
+
+    def __str__(self):
+        return f'{self.book.title} - Rated {self.rating} by {self.user}'

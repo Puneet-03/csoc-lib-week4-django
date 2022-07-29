@@ -9,7 +9,7 @@
 
 <dl>
     <dt>Genre:</dt>
-    <dd>{{ book.genre }}</dd>
+    <dd>ab</dd>
     <dt>Author:</dt>
     <dd>{{ book.author }}</dd>
     <dt>Description:</dt>
@@ -20,6 +20,17 @@
     <dd>Rs. {{ book.mrp }}</dd>
     <dt>Available Copies:</dt>
     <dd>{{ num_available }}</dd>
+				{% if user.is_authenticated %}
+				{% if current_user_rated is None %}
+							<dt>Rate Book:</dt>
+				{% else %}
+							<dt>Update Rating:</dt>
+				{% endif %}
+							<dd>
+							<input id="rating" type="number" min=0 max=10 value={{current_user_rated.rating}}>
+							<button class="btn btn-success" id= "rate-button" onclick="rateBook({{ book.id }})">Rate</button>
+							</dd>
+		{% endif %}
 </dl>
 <button class="btn btn-primary" id="loan-button">Loan {{ book.title }}</button>
 <script>
@@ -40,10 +51,35 @@ $("#loan-button").click(function(){
 			}
 		},
 		error: function(xhr, status, err){
-			alert("Some error occured");
+			alert("Some error occured. Make sure you are logged in before borrowing a book.");
+			window.location.replace("/login");
 		}
 
 	})
 })
+function rateBook(bid){
+	const rating = document.getElementById("rating").value
+	$.ajax({
+		url: "{% url 'rate-book'%}",
+		method:"POST",
+		data:{
+			bid: bid,
+			rating: rating,
+		},
+		success: function(data, status, xhr){
+			if(data['message'] == "success"){
+				alert('Thanks for rating!');
+				location.reload();
+			}
+			else{
+				var msg = data['message'];
+				alert(msg);
+			}
+		},
+		error: function(xhr, status, err){
+			alert('Some error occured while rating the book!');
+		}
+	})
+}
 </script>
 {% endblock %}

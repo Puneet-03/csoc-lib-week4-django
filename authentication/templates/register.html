@@ -1,0 +1,28 @@
+{% extends "login.html" %}
+
+{% block title %}
+    <title>Register</title>
+{% endblock %}
+
+{% block form %}
+    <form action="{% url 'Register' %}" method="POST">
+        <h1 style="display: flex; justify-content:center;">Register</h1>
+        {% csrf_token %}
+        {% for field in form %}
+        <p>
+            {{ field.label_tag }}
+            <br>
+            {{ field }}
+            {% if field.help_text %}
+            <small style="color: rgb(185, 185, 185);">{{field.help_text}}</small>
+            {% endif %}
+            {% for error in field.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+        </p>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Register</button>
+        <h6>Already have an account? <a href="{% url 'Login' %}">Login</a></h6>
+        <h6><a href="{% url 'book-list' %}">I just want to view the books</a></h6>
+    </form>
+{% endblock %}
